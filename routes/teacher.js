@@ -36,6 +36,16 @@ const normalizeReviewStatus = (value) => {
 
 const normalizeLicensureName = (value) => String(value || '').trim()
 
+const normalizeTab = (value) => {
+  const normalized = String(value || '').trim().toLowerCase()
+
+  if (['approved', 'pending', 'denied'].includes(normalized)) {
+    return normalized
+  }
+
+  return 'approved'
+}
+
 const ACTIVE_VIEWER_TTL_MS = 30000
 const activeTeacherReviewers = new Map()
 
@@ -152,7 +162,7 @@ const buildTeacherDashboardData = async (accessToken, staffId, requestedLicensur
       pdEventName: row['Professional Development Event Name'] || '',
       pdEventDate: row['Professional Development Event Date'] || '',
       pdEventTotalHours: row['Professional Development Total Hours'] || '',
-      evidenceUrl: row['Professional Development Evidence URL'] || '',
+      evidenceUrl: row['Professional Development Evidence URL'].split(',') || '',
       approver: row[approverColumnName] || '',
       denialReason: row[denialReasonColumnName] || '',
       reviewStatus: normalizeReviewStatus(row[reviewStatusColumnName])
@@ -209,6 +219,7 @@ router.get('/', async (request, response) => {
       view: "",
       user: request.session.user,
       otherReviewers: registerTeacherViewer(request, staffId),
+      tab: normalizeTab(request.query.tab),
       ...dashboardData
     })
   } catch (error) {
@@ -277,6 +288,8 @@ router.post('/:staffId/review', async (request, response) => {
   const action = String(request.body.action || '').trim().toLowerCase()
   const rowNumber = Number(request.body.rowNumber)
   const denialReason = String(request.body.denialReason || '').trim()
+  const requestedLicensure = normalizeLicensureName(request.body.licensure)
+  const requestedTab = normalizeTab(request.body.tab)
 
   if (!staffId || !Number.isInteger(rowNumber)) {
     return response.status(400).send('A valid staff ID and event row number are required.')
@@ -317,7 +330,9 @@ router.post('/:staffId/review', async (request, response) => {
       denialReason: action === 'denied' ? denialReason : '',
     })
 
-    response.redirect(`/teacher?id=${encodeURIComponent(staffId)}`)
+    const redirectUrl = `/teacher?id=${encodeURIComponent(staffId)}${requestedLicensure ? `&licensure=${encodeURIComponent(requestedLicensure)}` : ''}&tab=${encodeURIComponent(requestedTab)}`
+
+    response.redirect(redirectUrl)
   } catch (error) {
     console.error('Review action failed:', error)
     return response.status(500).send(error.message || 'Unable to update event review status.')

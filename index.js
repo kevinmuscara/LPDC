@@ -38,6 +38,6 @@ server.listen(PORT, HOST, (err) => {
   if (err) {
     console.error('Error starting server:', err);
   } else {
-    console.info(`FinalCheck - Server live.`);
+    console.info(`Server live.`);
   }
 });

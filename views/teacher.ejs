@@ -161,21 +161,20 @@
     <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab"
       data-tabs-toggle="#default-tab-content" role="tablist">
       <li class="me-2" role="presentation">
-        <button class="inline-block p-4 border-b-2 rounded-t-base" id="profile-tab" data-tabs-target="#profile"
-          type="button" role="tab" aria-controls="profile" aria-selected="false">Approved</button>
+        <a class="inline-block p-4 border-b-2 rounded-t-base" id="profile-tab" data-tabs-target="#profile"
+          type="button" role="tab" aria-controls="profile" aria-selected="false">Approved</a>
       </li>
       <li class="me-2" role="presentation">
-        <button class="inline-block p-4 border-b-2 rounded-t-base hover:text-fg-brand hover:border-brand"
+        <a class="inline-block p-4 border-b-2 rounded-t-base hover:text-fg-brand hover:border-brand"
           id="dashboard-tab" data-tabs-target="#dashboard" type="button" role="tab" aria-controls="dashboard"
-          aria-selected="false">Pending Review (<%= pendingEvents.length %>)</button>
+          aria-selected="false">Pending Review (<%= pendingEvents.length %>)</a>
       </li>
       <li class="me-2" role="presentation">
-        <button class="inline-block p-4 border-b-2 rounded-t-base hover:text-fg-brand hover:border-brand"
+        <a class="inline-block p-4 border-b-2 rounded-t-base hover:text-fg-brand hover:border-brand"
           id="settings-tab" data-tabs-target="#settings" type="button" role="tab" aria-controls="settings"
-          aria-selected="false">Denied</button>
+          aria-selected="false">Denied</a>
       </li>
     </ul>
-
   </div>
   <div id="default-tab-content">
     <!-- Approved -->
@@ -214,16 +213,15 @@
                       <%= event.approver || '' %>
                     </td>
                     <td class="font-normal text-body whitespace-nowrap">
-                      <% if (event.evidenceUrl) { %>
-                        <a href="<%= event.evidenceUrl %>" target="_blank" rel="noopener noreferrer"
-                          class="text-blue-700 underline">View</a>
-                        <% } else { %>
-                          -
-                          <% } %>
+                      <% (event.evidenceUrl.forEach((evidence, index) => { %>
+                        <a href="<%= evidence %>" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline">Item <%= index + 1 %></a><br />
+                      <% })) %>
                     </td>
                     <td class="font-normal text-body whitespace-nowrap">
                       <form method="POST" action="/teacher/<%= teacher.staffId %>/review" class="flex items-center justify-center">
                         <input type="hidden" name="rowNumber" value="<%= event.__sheetRowNumber %>">
+                        <input type="hidden" name="licensure" value="<%= teacher.licensureType || '' %>">
+                        <input type="hidden" name="tab" value="<%= tab || 'approved' %>">
                         <input type="hidden" name="action" value="pending">
                         <button type="button"
                           aria-label="Move this PD event back to pending review"
@@ -295,6 +293,8 @@
                     <form method="POST" action="/teacher/<%= teacher.staffId %>/review"
                       class="flex items-center justify-center">
                       <input type="hidden" name="rowNumber" value="<%= event.__sheetRowNumber %>">
+                      <input type="hidden" name="licensure" value="<%= teacher.licensureType || '' %>">
+                      <input type="hidden" name="tab" value="<%= tab || 'approved' %>">
                       <input type="hidden" name="action" value="">
                       <input type="hidden" name="denialReason" value="">
                       <button type="button"
@@ -379,6 +379,8 @@
                   <td class="font-normal text-body whitespace-nowrap">
                     <form method="POST" action="/teacher/<%= teacher.staffId %>/review" class="flex items-center justify-center">
                       <input type="hidden" name="rowNumber" value="<%= event.__sheetRowNumber %>">
+                      <input type="hidden" name="licensure" value="<%= teacher.licensureType || '' %>">
+                      <input type="hidden" name="tab" value="<%= tab || 'approved' %>">
                       <input type="hidden" name="action" value="pending">
                       <button type="button"
                         aria-label="Move this PD event back to pending review"
@@ -419,6 +421,54 @@
     const bannerText = document.getElementById('teacher-reviewer-banner-text');
     const initialReviewers = JSON.parse(document.getElementById('teacher-reviewer-initial-data').textContent || '[]');
 
+    const tabToPanelMap = {
+      approved: 'profile',
+      pending: 'dashboard',
+      denied: 'settings'
+    };
+
+    const tabLinks = Array.from(document.querySelectorAll('#default-tab a[role="tab"]'));
+    const panels = {
+      profile: document.getElementById('profile'),
+      dashboard: document.getElementById('dashboard'),
+      settings: document.getElementById('settings')
+    };
+
+    const normalizeTab = (value) => {
+      if (tabToPanelMap[value]) {
+        return value;
+      }
+
+      return 'approved';
+    };
+
+    const updateTabState = (selectedTab) => {
+      const normalizedTab = normalizeTab(selectedTab);
+      const selectedPanelId = tabToPanelMap[normalizedTab];
+      const url = new URL(window.location.href);
+
+      url.searchParams.set('tab', normalizedTab);
+      history.replaceState({}, '', url);
+
+      tabLinks.forEach((tab) => {
+        const targetPanelId = tab.dataset.tabsTarget?.replace('#', '');
+        const isSelected = targetPanelId === selectedPanelId;
+
+        tab.setAttribute('aria-selected', String(isSelected));
+        tab.classList.toggle('text-fg-brand', isSelected);
+        tab.classList.toggle('border-brand', isSelected);
+        tab.classList.toggle('border-b-2', true);
+      });
+
+      document.querySelectorAll('input[name="tab"]').forEach((tabInput) => {
+        tabInput.value = normalizedTab;
+      });
+
+      Object.entries(panels).forEach(([panelId, panel]) => {
+        panel.classList.toggle('hidden', panelId !== selectedPanelId);
+      });
+    };
+
     const setBanner = (reviewers = []) => {
       const reviewerNames = reviewers.map((reviewer) => reviewer.displayName || 'Another user');
 
@@ -450,6 +500,21 @@
       }
     };
 
+    tabLinks.forEach((tab) => {
+      tab.addEventListener('click', (event) => {
+        event.preventDefault();
+
+        const selectedTab = tab.dataset.tabsTarget?.replace('#', '') === 'profile'
+          ? 'approved'
+          : tab.dataset.tabsTarget?.replace('#', '') === 'dashboard'
+            ? 'pending'
+            : 'denied';
+
+        updateTabState(selectedTab);
+      });
+    });
+
+    updateTabState(new URLSearchParams(window.location.search).get('tab') || 'approved');
     updateReviewers();
     window.setInterval(updateReviewers, 15000);
   })();
