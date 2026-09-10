@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= teacher.teacherName || 'Teacher' %> - LPDC Print Report</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --border: #d1d5db;
+        --text: #111827;
+        --muted: #4b5563;
+        --heading: #1f2937;
+        --panel: #ffffff;
+        --soft: #f3f4f6;
+        --success: #166534;
+        --warning: #92400e;
+        --danger: #991b1b;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 32px;
+        font-family: Arial, Helvetica, sans-serif;
+        color: var(--text);
+        background: #ffffff;
+      }
+
+      .page {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        border-bottom: 2px solid var(--border);
+        padding-bottom: 16px;
+        margin-bottom: 24px;
+      }
+
+      .header h1 {
+        margin: 0;
+        font-size: 28px;
+        color: var(--heading);
+      }
+
+      .meta {
+        text-align: right;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(180px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .summary-card {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--panel);
+        padding: 16px;
+      }
+
+      .summary-card .label {
+        display: block;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        font-size: 12px;
+        margin-bottom: 8px;
+      }
+
+      .summary-card .value {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--heading);
+      }
+
+      .section {
+        margin-top: 24px;
+      }
+
+      .section h2 {
+        margin: 0 0 12px;
+        font-size: 20px;
+        color: var(--heading);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+      }
+
+      th, td {
+        border: 1px solid var(--border);
+        padding: 8px 10px;
+        text-align: left;
+        vertical-align: top;
+        font-size: 13px;
+      }
+
+      th {
+        background: var(--soft);
+        color: var(--heading);
+        font-weight: 700;
+      }
+
+      tr:nth-child(even) td {
+        background: #fafafa;
+      }
+
+      .pill {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        border: 1px solid transparent;
+      }
+
+      .pill-approved {
+        background: #dcfce7;
+        color: var(--success);
+        border-color: #86efac;
+      }
+
+      .pill-pending {
+        background: #fef3c7;
+        color: var(--warning);
+        border-color: #fcd34d;
+      }
+
+      .pill-denied {
+        background: #fee2e2;
+        color: var(--danger);
+        border-color: #fca5a5;
+      }
+
+      .evidence-link {
+        color: #1d4ed8;
+        text-decoration: underline;
+        font-weight: 700;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .report-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 16px;
+      }
+
+      .email-button {
+        appearance: none;
+        border: 0;
+        border-radius: 8px;
+        background: #1d4ed8;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 700;
+        padding: 10px 16px;
+        cursor: pointer;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.18);
+      }
+
+      .email-button:hover {
+        background: #1e40af;
+      }
+
+      .email-button:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+      }
+
+      @media print {
+        body {
+          padding: 0;
+        }
+
+        .print-actions {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page" data-printable-page="true">
+      <div class="report-actions">
+        <button type="button" class="email-button" id="email-report-button">Email report</button>
+      </div>
+
+      <div class="header">
+        <div>
+          <h1><%= teacher.teacherName || 'Teacher' %></h1>
+          <div class="muted"><%= teacher.building || 'Building' %></div>
+        </div>
+        <div class="meta">
+          <div>Generated: <%= generatedAt %></div>
+          <div>Staff ID: <%= teacher.staffId || 'N/A' %></div>
+          <div>Email: <%= teacher.emailAddress || 'N/A' %></div>
+        </div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-card">
+          <span class="label">Total PD Time</span>
+          <span class="value"><%= totalPdHours %> Hours</span>
+        </div>
+        <div class="summary-card">
+          <span class="label">Pending Review</span>
+          <span class="value"><%= pendingReviewHours %> Hours</span>
+        </div>
+        <div class="summary-card">
+          <span class="label">Licensure Type</span>
+          <span class="value"><%= teacher.licensureType || 'N/A' %></span>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Approved</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>PD Event Name</th>
+              <th>Date</th>
+              <th>Hours</th>
+              <th>Approver</th>
+              <th>Evidence</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (approvedEvents.length) { %>
+              <% approvedEvents.forEach((event) => { %>
+                <tr>
+                  <td><%= event.pdEventName || '' %></td>
+                  <td><%= event.pdEventDate || '' %></td>
+                  <td><%= event.pdEventTotalHours || '' %></td>
+                  <td><%= event.approver || '' %></td>
+                  <td>
+                    <% if (event.evidenceUrl) { %>
+                      <a href="<%= event.evidenceUrl %>" target="_blank" rel="noopener noreferrer" class="evidence-link">View</a>
+                    <% } else { %>
+                      -
+                    <% } %>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="5" class="muted">No approved PD sessions.</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section">
+        <h2>Pending Review</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>PD Event Name</th>
+              <th>Date</th>
+              <th>Hours</th>
+              <th>Status</th>
+              <th>Evidence</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (pendingEvents.length) { %>
+              <% pendingEvents.forEach((event) => { %>
+                <tr>
+                  <td><%= event.pdEventName || '' %></td>
+                  <td><%= event.pdEventDate || '' %></td>
+                  <td><%= event.pdEventTotalHours || '' %></td>
+                  <td><span class="pill pill-pending">Pending</span></td>
+                  <td>
+                    <% if (event.evidenceUrl) { %>
+                      <a href="<%= event.evidenceUrl %>" target="_blank" rel="noopener noreferrer" class="evidence-link">View</a>
+                    <% } else { %>
+                      -
+                    <% } %>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="5" class="muted">No sessions currently pending review.</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section">
+        <h2>Denied</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>PD Event Name</th>
+              <th>Date</th>
+              <th>Hours</th>
+              <th>Denial Reason</th>
+              <th>Evidence</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (deniedEvents.length) { %>
+              <% deniedEvents.forEach((event) => { %>
+                <tr>
+                  <td><%= event.pdEventName || '' %></td>
+                  <td><%= event.pdEventDate || '' %></td>
+                  <td><%= event.pdEventTotalHours || '' %></td>
+                  <td><%= event.denialReason || '' %></td>
+                  <td>
+                    <% if (event.evidenceUrl) { %>
+                      <a href="<%= event.evidenceUrl %>" target="_blank" rel="noopener noreferrer" class="evidence-link">View</a>
+                    <% } else { %>
+                      -
+                    <% } %>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="5" class="muted">No denied PD sessions.</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      const reportRecipient = <%- JSON.stringify(teacher.emailAddress || '') %>;
+      const reportSubject = <%- JSON.stringify((teacher.teacherName || 'Teacher') + ' - LPDC Report') %>;
+
+      const emailReportButton = document.getElementById('email-report-button');
+
+      if (emailReportButton) {
+        emailReportButton.disabled = !reportRecipient;
+
+        if (!reportRecipient) {
+          emailReportButton.title = 'No recipient email available for this report';
+        }
+
+        emailReportButton.addEventListener('click', () => {
+          if (!reportRecipient) {
+            alert('No recipient email is available for this report.');
+            return;
+          }
+
+          const reportBodyLines = [
+            `${reportSubject}`,
+            '',
+            `Full Name: ${<%- JSON.stringify(teacher.teacherName || 'Teacher') %>}`,
+            `Building: ${<%- JSON.stringify(teacher.building || 'N/A') %>}`,
+            `Staff ID: ${<%- JSON.stringify(teacher.staffId || 'N/A') %>}`,
+            `Licensure Type: ${<%- JSON.stringify(teacher.licensureName || teacher.licensureType || 'N/A') %>}`,
+            `Licensure Start Date: ${<%- JSON.stringify(teacher.licensureStartDate || 'N/A') %>}`,
+            `Licensure End Date: ${<%- JSON.stringify(teacher.licensureEndDate || 'N/A') %>}`,
+            `Approved Hours: ${<%- JSON.stringify(totalPdHours || 0) %>} Hours`,
+          ];
+
+          const reportBody = reportBodyLines.join('\n');
+
+          const gmailComposeUrl = new URL('https://mail.google.com/mail/');
+          gmailComposeUrl.searchParams.set('view', 'cm');
+          gmailComposeUrl.searchParams.set('fs', '1');
+          gmailComposeUrl.searchParams.set('to', reportRecipient);
+          gmailComposeUrl.searchParams.set('su', reportSubject);
+          gmailComposeUrl.searchParams.set('body', reportBody);
+
+          window.open(gmailComposeUrl.toString(), '_blank');
+        });
+      }
+    </script>
+  </body>
+</html>

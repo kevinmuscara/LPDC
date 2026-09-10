@@ -1,0 +1,210 @@
+<!-- Navbar -->
+<nav class="bg-white w-full border-b border-default mb-4">
+  <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+    <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
+      <img src="https://files.smartsites.parentsquare.com/12675/header_logo_img_hb0sk6aicoao7oplpjf.png" class="h-10" alt="WC Logo" />
+      <span class="self-center text-2xl text-heading font-bold whitespace-nowrap">LPDC</span>
+    </a>
+    <div class="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+      <button type="button"
+        class="flex text-sm bg-neutral-primary rounded-full md:me-0 focus:ring-4 focus:ring-neutral-tertiary"
+        id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown"
+        data-dropdown-placement="bottom">
+        <span class="sr-only">Open user menu</span>
+        <img class="w-10 h-10 rounded-full" src="<%= user.photos[0].value %>" alt="user photo">
+      </button>
+      <div class="z-50 hidden bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-44"
+        id="user-dropdown">
+        <div class="px-4 py-3 text-sm border-b border-default">
+          <span class="block text-heading font-medium">
+            <%= user.displayName %>
+          </span>
+          <span class="block text-body truncate">
+            <%= user.emails[0].value %>
+          </span>
+        </div>
+        <ul class="p-2 text-sm text-body font-medium" aria-labelledby="user-menu-button">
+          <li>
+            <a href="/auth/logout"
+              class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Sign
+              out</a>
+          </li>
+        </ul>
+      </div>
+      <button data-collapse-toggle="navbar-user" type="button"
+        class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-body rounded-base md:hidden hover:bg-neutral-secondary-soft hover:text-heading focus:outline-none focus:ring-2 focus:ring-neutral-tertiary"
+        aria-controls="navbar-user" aria-expanded="false">
+        <span class="sr-only">Open main menu</span>
+        <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+          viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h14" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-user">
+      <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-default rounded-base bg-neutral-secondary-soft md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-neutral-primary">
+        <li>
+          <% if (view === 'staff') { %>
+            <a href="/dashboard?view=staff" class="block py-2 px-3 text-white bg-brand rounded md:bg-transparent md:text-fg-brand md:p-0" aria-current="page">All Staff</a>
+          <% } else { %>
+            <a href="/dashboard?view=staff" class="block py-2 px-3 text-heading rounded hover:bg-neutral-tertiary md:hover:bg-transparent md:border-0 md:hover:text-fg-brand md:p-0 md:dark:hover:bg-transparent">All Staff</a>
+          <% } %>
+        </li>
+        <li>
+          <% if (view === 'pending') { %>
+            <a href="/dashboard?view=pending" class="block py-2 px-3 text-white bg-brand rounded md:bg-transparent md:text-fg-brand md:p-0" aria-current="page">Needs Approval</a>
+          <% } else { %>
+            <a href="/dashboard?view=pending" class="block py-2 px-3 text-heading rounded hover:bg-neutral-tertiary md:hover:bg-transparent md:border-0 md:hover:text-fg-brand md:p-0 md:dark:hover:bg-transparent">Needs Approval</a>
+          <% } %>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<% if (view === 'pending') { %>
+<!-- Needs Approval -->
+<div class="bg-white mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 border border-default rounded-lg shadow-lg p-4 my-4 space-y-6">
+  <div>
+    <h1 class="py-2 text-heading flex items-center text-2xl font-bold tracking-tight">Needs Approval</h1>
+
+    <table class="searchable-staff-table" id="pending-review-staff-table">
+      <thead>
+        <tr>
+          <th>
+            <span class="flex items-center">
+              First Name
+              <svg class="w-4 h-4 ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="m8 15 4 4 4-4m0-6-4-4-4 4" />
+              </svg>
+            </span>
+          </th>
+          <th>
+            <span class="flex items-center">
+              Last Name
+              <svg class="w-4 h-4 ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="m8 15 4 4 4-4m0-6-4-4-4 4" />
+              </svg>
+            </span>
+          </th>
+          <th>
+            <span class="flex items-center">
+              Building
+              <svg class="w-4 h-4 ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="m8 15 4 4 4-4m0-6-4-4-4 4" />
+              </svg>
+            </span>
+          </th>
+          <th>
+            <span class="flex items-center">
+              Staff ID
+              <svg class="w-4 h-4 ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="m8 15 4 4 4-4m0-6-4-4-4 4" />
+              </svg>
+            </span>
+          </th>
+          <th>
+            <span class="flex items-center">
+              Email Address
+              <svg class="w-4 h-4 ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="m8 15 4 4 4-4m0-6-4-4-4 4" />
+              </svg>
+            </span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (pendingReviewUsers.length) { %>
+          <% for (let i=0; i < pendingReviewUsers.length; i++) { %>
+            <tr class="even:bg-gray-50">
+              <td class="font-medium text-heading whitespace-nowrap">
+                <a href="/teacher?id=<%= pendingReviewUsers[i].staffId %>"
+                  class="text-blue-700 font-semibold underline decoration-2 underline-offset-2 hover:text-blue-900">
+                  <%= pendingReviewUsers[i].firstName %>
+                </a>
+              </td>
+              <td class="font-medium text-heading whitespace-nowrap">
+                <a href="/teacher?id=<%= pendingReviewUsers[i].staffId %>"
+                  class="text-blue-700 font-semibold underline decoration-2 underline-offset-2 hover:text-blue-900">
+                  <%= pendingReviewUsers[i].lastName %>
+                </a>
+              </td>
+              <td class="font-medium text-heading whitespace-nowrap">
+                <%= pendingReviewUsers[i].building %>
+              </td>
+              <td class="font-medium text-heading whitespace-nowrap">
+                <%= pendingReviewUsers[i].staffId %>
+              </td>
+              <td class="font-medium text-heading whitespace-nowrap">
+                <%= pendingReviewUsers[i].emailAddress %>
+              </td>
+            </tr>
+            <% } %>
+              <% } else { %>
+                <tr>
+                  <td colspan="5" class="text-center py-4 text-body">No staff members currently need PD event approval.
+                  </td>
+                </tr>
+                <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<% } %>
+
+<% if (view === 'staff') { %>
+<!-- All Staff -->
+<div class="bg-white mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 border border-default rounded-lg shadow-lg p-4 my-4 space-y-6">
+  <div>
+    <h1 class="py-2 text-heading flex items-center text-2xl font-bold tracking-tight">All Staff</h1>
+
+    <table class="searchable-staff-table" id="searchable-staff-table">
+      <thead>
+        <tr>
+          <% headers.forEach((header) => { %>
+            <th>
+              <span class="flex items-center">
+                <%= header.label %>
+                <svg class="w-4 h-4 ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m8 15 4 4 4-4m0-6-4-4-4 4" />
+                </svg>
+              </span>
+            </th>
+          <% }) %>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (let i=0; i < users.length; i++) { %>
+          <tr class="even:bg-gray-50">
+            <% for (let j=0; j < headers.length; j++) { %>
+              <td class="font-medium text-heading whitespace-nowrap">
+                <% if (headers[j].key==='firstName' || headers[j].key==='lastName' ) { %>
+                  <a href="/teacher?id=<%= users[i].staffId %>"
+                    class="text-blue-700 font-semibold underline decoration-2 underline-offset-2 hover:text-blue-900">
+                    <%= users[i][headers[j].key] %>
+                  </a>
+                  <% } else { %>
+                    <%= users[i][headers[j].key] %>
+                      <% } %>
+              </td>
+              <% } %>
+          </tr>
+          <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<% } %>

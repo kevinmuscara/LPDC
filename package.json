@@ -1,0 +1,41 @@
+{
+  "dependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "@tailwindplus/elements": "^1.0.22",
+    "daisyui": "^5.7.27",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "express-ejs-layouts": "^2.5.1",
+    "express-session": "^1.19.0",
+    "flowbite": "^4.0.2",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-oauth": "^1.0.0",
+    "simple-datatables": "^10.3.0",
+    "tailwindcss": "^4.3.3"
+  },
+  "name": "lpdc",
+  "version": "1.0.0",
+  "description": "LPDC Dashboard",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run build:css && node index.js",
+    "build:css": "npx @tailwindcss/cli -i ./public/input.css -o ./public/output.css",
+    "dev:css": "npx @tailwindcss/cli -i ./public/input.css -o ./public/output.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kevinmuscara/LPDC.git"
+  },
+  "keywords": [],
+  "author": "Kevin Muscara",
+  "license": "",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/kevinmuscara/LPDC/issues"
+  },
+  "homepage": "https://github.com/kevinmuscara/LPDC#readme",
+  "devDependencies": {
+    "dotenv": "^17.4.2"
+  }
+}

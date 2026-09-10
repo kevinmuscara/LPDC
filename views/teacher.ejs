@@ -1,0 +1,456 @@
+<!-- Navbar -->
+<nav class="bg-white w-full border-b border-default mb-4">
+  <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+    <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
+      <img src="https://files.smartsites.parentsquare.com/12675/header_logo_img_hb0sk6aicoao7oplpjf.png" class="h-10" alt="WC Logo" />
+      <span class="self-center text-2xl text-heading font-bold whitespace-nowrap">LPDC</span>
+    </a>
+    <div class="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+      <button type="button"
+        class="flex text-sm bg-neutral-primary rounded-full md:me-0 focus:ring-4 focus:ring-neutral-tertiary"
+        id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown"
+        data-dropdown-placement="bottom">
+        <span class="sr-only">Open user menu</span>
+        <img class="w-10 h-10 rounded-full" src="<%= user.photos[0].value %>" alt="user photo">
+      </button>
+      <div class="z-50 hidden bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-44"
+        id="user-dropdown">
+        <div class="px-4 py-3 text-sm border-b border-default">
+          <span class="block text-heading font-medium">
+            <%= user.displayName %>
+          </span>
+          <span class="block text-body truncate">
+            <%= user.emails[0].value %>
+          </span>
+        </div>
+        <ul class="p-2 text-sm text-body font-medium" aria-labelledby="user-menu-button">
+          <li>
+            <a href="/auth/logout"
+              class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Sign
+              out</a>
+          </li>
+        </ul>
+      </div>
+      <button data-collapse-toggle="navbar-user" type="button"
+        class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-body rounded-base md:hidden hover:bg-neutral-secondary-soft hover:text-heading focus:outline-none focus:ring-2 focus:ring-neutral-tertiary"
+        aria-controls="navbar-user" aria-expanded="false">
+        <span class="sr-only">Open main menu</span>
+        <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+          viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h14" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-user">
+      <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-default rounded-base bg-neutral-secondary-soft md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-neutral-primary">
+        <li>
+          <% if (view === 'staff') { %>
+            <a href="/dashboard?view=staff" class="block py-2 px-3 text-white bg-brand rounded md:bg-transparent md:text-fg-brand md:p-0" aria-current="page">All Staff</a>
+          <% } else { %>
+            <a href="/dashboard?view=staff" class="block py-2 px-3 text-heading rounded hover:bg-neutral-tertiary md:hover:bg-transparent md:border-0 md:hover:text-fg-brand md:p-0 md:dark:hover:bg-transparent">All Staff</a>
+          <% } %>
+        </li>
+        <li>
+          <% if (view === 'pending') { %>
+            <a href="/dashboard?view=pending" class="block py-2 px-3 text-white bg-brand rounded md:bg-transparent md:text-fg-brand md:p-0" aria-current="page">Needs Approval</a>
+          <% } else { %>
+            <a href="/dashboard?view=pending" class="block py-2 px-3 text-heading rounded hover:bg-neutral-tertiary md:hover:bg-transparent md:border-0 md:hover:text-fg-brand md:p-0 md:dark:hover:bg-transparent">Needs Approval</a>
+          <% } %>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div id="teacher-reviewer-banner" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 my-4 hidden">
+  <div class="flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 shadow-sm">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 9v4" />
+      <path d="M12 17h.01" />
+      <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
+    </svg>
+    <span id="teacher-reviewer-banner-text"></span>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="bg-white mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 border border-default rounded-lg shadow-lg p-4 my-4">
+  <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-4 md:flex-1">
+      <div>
+        <h1 class="py-2 text-heading flex items-center text-3xl font-bold tracking-tight">
+          <%= teacher.teacherName || 'Teacher Name' %>
+        </h1>
+        <%= teacher.building || 'Building' %>
+      </div>
+
+      <div class="relative flex items-center justify-center">
+        <button id="dropdownDefaultButton" data-dropdown-toggle="licensure-dropdown"
+          class="inline-flex w-full max-w-[240px] items-center justify-between rounded-lg border border-default-medium bg-white px-3 py-2 text-left text-sm font-medium text-heading shadow-sm transition hover:bg-neutral-secondary-soft focus:outline-none focus:ring-2 focus:ring-neutral-tertiary"
+          type="button">
+          <span class="truncate">
+            <%= teacher.licensureType || 'N/A' %>
+          </span>
+          <svg class="ms-2 h-4 w-4 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+            height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="m19 9-7 7-7-7" />
+          </svg>
+        </button>
+        <div id="licensure-dropdown"
+          class="z-10 hidden w-52 rounded-lg border border-default-medium bg-white shadow-lg">
+          <ul class="p-2 text-sm text-body font-medium" aria-labelledby="dropdownDefaultButton">
+            <% if (teacher.licensureOptions && teacher.licensureOptions.length) { %>
+              <% teacher.licensureOptions.forEach((licensureOption)=> { %>
+                <li>
+                  <a href="/teacher?id=<%= encodeURIComponent(teacher.staffId) %>&licensure=<%= encodeURIComponent(licensureOption) %>"
+                    class="inline-flex items-center w-full rounded-md p-2 <%= teacher.licensureType === licensureOption ? 'bg-neutral-secondary-soft text-heading font-semibold' : 'text-body hover:bg-neutral-tertiary-medium hover:text-heading' %>">
+                    <%= licensureOption || 'N/A' %>
+                  </a>
+                </li>
+                <% }) %>
+                  <% } else { %>
+                    <li>
+                      <span class="inline-flex items-center w-full rounded-md p-2 text-body">
+                        <%= teacher.licensureType || 'N/A' %>
+                      </span>
+                    </li>
+                    <% } %>
+          </ul>
+        </div>
+      </div>
+
+      <div>
+        <h1 class="py-2 text-heading flex items-center text-xl font-bold tracking-tight">
+          <%= totalPdHours %> Hours
+        </h1>
+        Total PD Time
+      </div>
+      <div>
+        <h1 class="py-2 text-heading flex items-center text-xl font-bold tracking-tight">
+          <%= pendingReviewHours %> Hours
+        </h1>
+        Time Pending Review
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <a href="/teacher/print?id=<%= teacher.staffId %><%= teacher.licensureType ? '&licensure=' + encodeURIComponent(teacher.licensureType) : '' %>"
+        target="_blank"
+        class="inline-flex items-center justify-center rounded-md border border-slate-200 bg-blue p-2.5 text-black hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
+        aria-label="Generate printable report">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M7 3.5h8l4 4v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2Z" />
+          <path d="M15 3.5v4h4" />
+          <path d="M8 12h8" />
+          <path d="M8 16h8" />
+          <path d="M8 8h2" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="bg-white mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 border border-default rounded-lg p-4 my-4">
+
+
+  <div class="mb-4 border-b border-default">
+    <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab"
+      data-tabs-toggle="#default-tab-content" role="tablist">
+      <li class="me-2" role="presentation">
+        <button class="inline-block p-4 border-b-2 rounded-t-base" id="profile-tab" data-tabs-target="#profile"
+          type="button" role="tab" aria-controls="profile" aria-selected="false">Approved</button>
+      </li>
+      <li class="me-2" role="presentation">
+        <button class="inline-block p-4 border-b-2 rounded-t-base hover:text-fg-brand hover:border-brand"
+          id="dashboard-tab" data-tabs-target="#dashboard" type="button" role="tab" aria-controls="dashboard"
+          aria-selected="false">Pending Review (<%= pendingEvents.length %>)</button>
+      </li>
+      <li class="me-2" role="presentation">
+        <button class="inline-block p-4 border-b-2 rounded-t-base hover:text-fg-brand hover:border-brand"
+          id="settings-tab" data-tabs-target="#settings" type="button" role="tab" aria-controls="settings"
+          aria-selected="false">Denied</button>
+      </li>
+    </ul>
+
+  </div>
+  <div id="default-tab-content">
+    <!-- Approved -->
+    <div class="hidden p-4 rounded-base bg-white" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+      <div class="space-y-6">
+        <div>
+          <table id="approved-events-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>PD Event Name</th>
+                <th>PD Event Date</th>
+                <th>PD Event Total Hours</th>
+                <th>Approver</th>
+                <th>Evidence URL</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (approvedEvents.length) { %>
+                <% approvedEvents.forEach((event)=> { %>
+                  <tr class="even:bg-gray-50">
+                    <td class="font-normal text-body whitespace-nowrap">
+                      <%= event.timestamp || '' %>
+                    </td>
+                    <td class="font-semibold text-heading whitespace-nowrap">
+                      <%= event.pdEventName || '' %>
+                    </td>
+                    <td class="font-normal text-body whitespace-nowrap">
+                      <%= event.pdEventDate || '' %>
+                    </td>
+                    <td class="font-semibold text-heading whitespace-nowrap">
+                      <%= event.pdEventTotalHours || '' %>
+                    </td>
+                    <td class="font-normal text-body whitespace-nowrap">
+                      <%= event.approver || '' %>
+                    </td>
+                    <td class="font-normal text-body whitespace-nowrap">
+                      <% if (event.evidenceUrl) { %>
+                        <a href="<%= event.evidenceUrl %>" target="_blank" rel="noopener noreferrer"
+                          class="text-blue-700 underline">View</a>
+                        <% } else { %>
+                          -
+                          <% } %>
+                    </td>
+                    <td class="font-normal text-body whitespace-nowrap">
+                      <form method="POST" action="/teacher/<%= teacher.staffId %>/review" class="flex items-center justify-center">
+                        <input type="hidden" name="rowNumber" value="<%= event.__sheetRowNumber %>">
+                        <input type="hidden" name="action" value="pending">
+                        <button type="button"
+                          aria-label="Move this PD event back to pending review"
+                          title="Move back to pending review"
+                          onclick="if (confirm('Are you sure you want to move this PD event back to pending review?')) { this.form.submit(); }"
+                          class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-amber-500 text-white hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-1">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M3 12a9 9 0 1 0 3-6.7" />
+                            <path d="M3 4v5h5" />
+                          </svg>
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                  <% }) %>
+                    <% } else { %>
+                      <tr>
+                        <td colspan="7" class="text-center py-4 text-body">No approved PD events found for this staff
+                          member.</td>
+                      </tr>
+                      <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pending Review -->
+    <div class="hidden p-4 rounded-base bg-white" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
+      <div>
+        <table id="pending-events-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>PD Event Name</th>
+              <th>PD Event Date</th>
+              <th>PD Event Total Hours</th>
+              <th>Evidence URL</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (pendingEvents.length) { %>
+              <% pendingEvents.forEach((event)=> { %>
+                <tr class="even:bg-gray-50">
+                  <td class="font-normal text-body whitespace-nowrap">
+                    <%= event.timestamp || '' %>
+                  </td>
+                  <td class="font-semibold text-heading whitespace-nowrap">
+                    <%= event.pdEventName || '' %>
+                  </td>
+                  <td class="font-normal text-body whitespace-nowrap">
+                    <%= event.pdEventDate || '' %>
+                  </td>
+                  <td class="font-semibold text-heading whitespace-nowrap">
+                    <%= event.pdEventTotalHours || '' %>
+                  </td>
+                  <td class="font-normal text-body whitespace-nowrap">
+                    <% if (event.evidenceUrl) { %>
+                      <a href="<%= event.evidenceUrl %>" target="_blank" rel="noopener noreferrer"
+                        class="text-blue-700 underline">View</a>
+                      <% } else { %>
+                        -
+                        <% } %>
+                  </td>
+                  <td class="font-normal text-body whitespace-nowrap">
+                    <form method="POST" action="/teacher/<%= teacher.staffId %>/review"
+                      class="flex items-center justify-center">
+                      <input type="hidden" name="rowNumber" value="<%= event.__sheetRowNumber %>">
+                      <input type="hidden" name="action" value="">
+                      <input type="hidden" name="denialReason" value="">
+                      <button type="button"
+                        aria-label="Approve this PD event"
+                        title="Approve"
+                        onclick="this.form.querySelector('input[name=action]').value = 'approved'; if (confirm('Are you sure you want to approve this PD event?')) { this.form.submit(); }"
+                        class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-green-300 text-white hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          aria-hidden="true">
+                          <path d="M5 12.5 9.5 17 19 7.5" />
+                        </svg>
+                      </button>
+
+                      <button type="button"
+                        aria-label="Deny this PD event"
+                        title="Deny"
+                        onclick="const reason = window.prompt('Please enter a denial reason for this PD event:'); if (reason === null) { return; } const trimmedReason = reason.trim(); if (!trimmedReason) { window.alert('A denial reason is required.'); return; } this.form.querySelector('input[name=denialReason]').value = trimmedReason; this.form.querySelector('input[name=action]').value = 'denied'; this.form.submit();"
+                        class="ml-2 inline-flex h-8 w-8 items-center justify-center rounded-md bg-red-300 text-white hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          aria-hidden="true">
+                          <path d="M6 6l12 12M18 6L6 18" />
+                        </svg>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+                <% }) %>
+                  <% } else { %>
+                    <tr>
+                      <td colspan="6" class="text-center py-4 text-body">No PD events are waiting for review.</td>
+                    </tr>
+                    <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Denied -->
+    <div class="hidden p-4 rounded-base bg-white" id="settings" role="tabpanel" aria-labelledby="settings-tab">
+      <div>
+        <table id="denied-events-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>PD Event Name</th>
+              <th>PD Event Date</th>
+              <th>PD Event Total Hours</th>
+              <th>Denial Reason</th>
+              <th>Evidence URL</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (deniedEvents.length) { %>
+              <% deniedEvents.forEach((event)=> { %>
+                <tr class="even:bg-gray-50">
+                  <td class="font-normal text-body whitespace-nowrap">
+                    <%= event.timestamp || '' %>
+                  </td>
+                  <td class="font-semibold text-heading whitespace-nowrap">
+                    <%= event.pdEventName || '' %>
+                  </td>
+                  <td class="font-normal text-body whitespace-nowrap">
+                    <%= event.pdEventDate || '' %>
+                  </td>
+                  <td class="font-semibold text-heading whitespace-nowrap">
+                    <%= event.pdEventTotalHours || '' %>
+                  </td>
+                  <td class="font-normal text-body whitespace-nowrap">
+                    <%= event.denialReason || '' %>
+                  </td>
+                  <td class="font-normal text-body whitespace-nowrap">
+                    <% if (event.evidenceUrl) { %>
+                      <a href="<%= event.evidenceUrl %>" target="_blank" rel="noopener noreferrer"
+                        class="text-blue-700 underline">View</a>
+                      <% } else { %>
+                        -
+                        <% } %>
+                  </td>
+                  <td class="font-normal text-body whitespace-nowrap">
+                    <form method="POST" action="/teacher/<%= teacher.staffId %>/review" class="flex items-center justify-center">
+                      <input type="hidden" name="rowNumber" value="<%= event.__sheetRowNumber %>">
+                      <input type="hidden" name="action" value="pending">
+                      <button type="button"
+                        aria-label="Move this PD event back to pending review"
+                        title="Move back to pending review"
+                        onclick="if (confirm('Are you sure you want to move this PD event back to pending review?')) { this.form.submit(); }"
+                        class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-amber-500 text-white hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                          aria-hidden="true">
+                          <path d="M3 12a9 9 0 1 0 3-6.7" />
+                          <path d="M3 4v5h5" />
+                        </svg>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+                <% }) %>
+                  <% } else { %>
+                    <tr>
+                      <td colspan="7" class="text-center py-4 text-body">No denied PD events found for this staff
+                        member.
+                      </td>
+                    </tr>
+                    <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script type="application/json" id="teacher-reviewer-initial-data"><%- JSON.stringify(otherReviewers || []) %></script>
+<script>
+  (function () {
+    const teacherStaffId = '<%= teacher.staffId %>';
+    const bannerContainer = document.getElementById('teacher-reviewer-banner');
+    const bannerText = document.getElementById('teacher-reviewer-banner-text');
+    const initialReviewers = JSON.parse(document.getElementById('teacher-reviewer-initial-data').textContent || '[]');
+
+    const setBanner = (reviewers = []) => {
+      const reviewerNames = reviewers.map((reviewer) => reviewer.displayName || 'Another user');
+
+      if (!reviewerNames.length) {
+        bannerContainer.classList.add('hidden');
+        bannerText.textContent = '';
+        return;
+      }
+
+      const reviewerList = reviewerNames.join(', ');
+      bannerText.textContent = `Another reviewer is currently viewing this teacher page: ${reviewerList}.`;
+      bannerContainer.classList.remove('hidden');
+    };
+
+    setBanner(initialReviewers);
+
+    const updateReviewers = async () => {
+      try {
+        const response = await fetch(`/teacher/viewers?id=${encodeURIComponent(teacherStaffId)}`);
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data = await response.json();
+        setBanner(data.otherViewers || []);
+      } catch (error) {
+        console.error('Unable to refresh active teacher reviewers:', error);
+      }
+    };
+
+    updateReviewers();
+    window.setInterval(updateReviewers, 15000);
+  })();
+</script>

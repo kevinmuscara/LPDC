@@ -1,0 +1,28 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import "flowbite/src/themes/default";
+@plugin "flowbite/plugin";
+@source "../node_modules/flowbite";
+
+@layer utilities {
+  .datatable-wrapper .datatable-table {
+    table-layout: auto;
+  }
+
+  .datatable-wrapper .datatable-table thead th,
+  .datatable-wrapper .datatable-table tbody th,
+  .datatable-wrapper .datatable-table tbody td {
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    padding-left: 0.875rem;
+    padding-right: 0.875rem;
+  }
+
+  .datatable-wrapper .datatable-container {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+}
